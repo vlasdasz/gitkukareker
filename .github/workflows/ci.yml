@@ -1,0 +1,64 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+  GITHUB_ACTIONS: true
+
+jobs:
+
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [
+          { runner: mac, os: macos },
+          { runner: windows-latest, os: windows },
+
+          { runner: mac, os: ios },
+          { runner: ubuntu-latest, os: android }
+        ]
+    runs-on: ${{ matrix.target.runner }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{secrets.GITHUB_TOKEN}}
+          submodules: recursive
+
+      - name: Build
+        if: ${{ matrix.target.os != 'windows' }}
+        run: ./build/build.sh ${{ matrix.target.os }}
+
+      - name: Build windows
+        if: ${{ matrix.target.os == 'windows' }}
+        run: py build/build.py
+
+      - name: Test
+        if: ${{ matrix.target.os != 'ios' && matrix.target.os != 'android' }}
+        run: make test
+
+  linux:
+    name: Build Linux
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [
+          { container: "ubuntu" },
+        ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{secrets.GITHUB_TOKEN}}
+          submodules: recursive
+
+      - name: Free Space
+        run: ./build/scripts/free_action_runner.sh
+
+      - name: Build
+        run: echo ${{ matrix.target.container }} && ./build/in_docker.sh ${{ matrix.target.container }}

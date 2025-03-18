@@ -1,0 +1,6 @@
+[
+  {
+    "label": "Run Labirintas",
+    "command": "cargo run -p labirintas"
+  }
+]

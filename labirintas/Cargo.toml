@@ -1,0 +1,19 @@
+[package]
+name = "labirintas"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "labirintas"
+
+[lib]
+name = "labirintas"
+crate-type = ["rlib", "staticlib"]
+
+[dependencies]
+serde = { workspace = true }
+
+test-engine = { workspace = true }
+
+[build-dependencies]
+cfg_aliases = "0.2"

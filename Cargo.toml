@@ -1,0 +1,17 @@
+[workspace]
+
+default-members = ["labirintas"]
+members = ["labirintas", "labirintas-android"]
+
+resolver = "2"
+
+[workspace.metadata.cargo-machete]
+ignored = []
+
+[workspace.dependencies]
+serde = "1.0"
+
+labirintas = { path = "labirintas" }
+
+test-engine = { git = "https://github.com/vlasdasz/test-engine.git", rev = "db78609c8645e43a477952a45414f1430c0f0232" }
+#test-engine = { path = "../test-engine/test-engine" }

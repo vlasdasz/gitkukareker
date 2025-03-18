@@ -11,6 +11,7 @@ name = "kukareker"
 crate-type = ["rlib", "staticlib"]
 
 [dependencies]
+rfd = { workspace = true }
 serde = { workspace = true }
 
 test-engine = { workspace = true }

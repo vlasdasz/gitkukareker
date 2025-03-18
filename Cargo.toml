@@ -10,6 +10,7 @@ ignored = []
 
 [workspace.dependencies]
 serde = "1.0"
+rfd = "0.15"
 
 kukareker = { path = "kukareker" }
 

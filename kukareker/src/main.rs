@@ -3,6 +3,7 @@
 #![feature(arbitrary_self_types)]
 #![feature(duration_constructors)]
 
+mod model;
 mod ui;
 
 fn main() {

@@ -39,15 +39,8 @@ impl Setup for Main {
 
 impl Main {
     fn update(mut self: Weak<Self>) {
-        self.repo_name.set_values(State::repos().map(|repo| {
-            repo.components()
-                .last()
-                .unwrap()
-                .to_owned()
-                .as_os_str()
-                .to_string_lossy()
-                .to_string()
-        }));
+        self.repo_name
+            .set_values(State::repos().map(|repo| repo.file_name().unwrap().to_string_lossy().to_string()));
     }
 
     fn on_open(self: Weak<Self>) {

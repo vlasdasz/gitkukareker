@@ -3,9 +3,6 @@
 #![feature(arbitrary_self_types)]
 #![feature(duration_constructors)]
 
-mod assets;
-mod lab_level;
-mod model;
 mod ui;
 
 fn main() {

@@ -1,7 +1,7 @@
 [workspace]
 
-default-members = ["labirintas"]
-members = ["labirintas", "labirintas-android"]
+default-members = ["kukareker"]
+members = ["kukareker"]
 
 resolver = "2"
 
@@ -11,7 +11,7 @@ ignored = []
 [workspace.dependencies]
 serde = "1.0"
 
-labirintas = { path = "labirintas" }
+kukareker = { path = "kukareker" }
 
-test-engine = { git = "https://github.com/vlasdasz/test-engine.git", rev = "db78609c8645e43a477952a45414f1430c0f0232" }
-#test-engine = { path = "../test-engine/test-engine" }
+#test-engine = { git = "https://github.com/vlasdasz/test-engine.git", rev = "db78609c8645e43a477952a45414f1430c0f0232" }
+test-engine = { path = "../test-engine/test-engine" }

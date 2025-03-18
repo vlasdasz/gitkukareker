@@ -1,13 +1,13 @@
 [package]
-name = "labirintas"
+name = "kukareker"
 version = "0.1.0"
 edition = "2021"
 
 [[bin]]
-name = "labirintas"
+name = "kukareker"
 
 [lib]
-name = "labirintas"
+name = "kukareker"
 crate-type = ["rlib", "staticlib"]
 
 [dependencies]

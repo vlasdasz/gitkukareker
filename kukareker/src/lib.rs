@@ -4,12 +4,9 @@
 #![feature(const_trait_impl)]
 #![feature(duration_constructors)]
 
-use crate::app::LabirintasApp;
+use crate::app::KukarekerApp;
 
 mod app;
-mod assets;
-mod lab_level;
-mod model;
 mod ui;
 
-test_engine::register_app!(LabirintasApp);
+test_engine::register_app!(KukarekerApp);

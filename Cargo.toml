@@ -11,6 +11,7 @@ ignored = []
 [workspace.dependencies]
 rfd = "0.15"
 git2 = "0.20"
+anyhow = "1.0"
 
 kukareker = { path = "kukareker" }
 

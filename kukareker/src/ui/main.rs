@@ -12,7 +12,13 @@ use test_engine::{
     Window,
 };
 
-use crate::{model::State, ui::changes::Changes};
+use crate::{
+    model::State,
+    ui::{
+        changes::Changes,
+        history::{CommitHistory, History},
+    },
+};
 
 #[view]
 pub struct Main {
@@ -21,6 +27,8 @@ pub struct Main {
     open:      Button,
 
     changes: Changes,
+
+    history: History,
 }
 
 impl Setup for Main {
@@ -31,7 +39,7 @@ impl Setup for Main {
         self.repo_name
             .custom_format(|path| path.file_name().unwrap().to_string_lossy().to_string());
         self.repo_name.on_changed(move |path| {
-            self.repo_selected(&path);
+            self.repo_selected(&path).unwrap();
         });
 
         self.open.set_text("Open");
@@ -44,6 +52,8 @@ impl Setup for Main {
         link_button!(self, open, on_open);
 
         self.changes.place().trb(0).w(500);
+
+        self.history.place().t(200).lrb(0);
 
         self.update();
     }
@@ -63,7 +73,7 @@ impl Main {
         self.update();
     }
 
-    fn repo_selected(mut self: Weak<Self>, path: &PathBuf) {
+    fn repo_selected(mut self: Weak<Self>, path: &PathBuf) -> anyhow::Result<()> {
         let Ok(repo) = Repository::discover(path) else {
             panic!("no repo")
         };
@@ -71,13 +81,22 @@ impl Main {
         let mut status_opts = StatusOptions::new();
         status_opts.include_untracked(true);
 
-        let statuses = repo.statuses(Some(&mut status_opts)).unwrap();
-
-        for status in &statuses {
-            dbg!(&status.status());
-            dbg!(&status.path());
-        }
+        let statuses = repo.statuses(Some(&mut status_opts))?;
 
         self.changes.set_changes(statuses.into_iter().map(Into::into).collect());
+
+        let head = repo.head()?;
+        let head_commit = head.peel_to_commit()?;
+
+        let mut revwalk = repo.revwalk()?;
+        revwalk.push(head_commit.id())?;
+
+        let history: Vec<CommitHistory> = revwalk
+            .map(|commit_id| repo.find_commit(commit_id.unwrap()).unwrap().into())
+            .collect();
+
+        self.history.set_history(history);
+
+        Ok(())
     }
 }

@@ -3,7 +3,7 @@ use test_engine::{
     ui::{view, Anchor::Left, HasText, Label, Setup, ViewData},
 };
 
-use crate::model::Change;
+use crate::ui::changes::Change;
 
 #[view]
 pub struct ChangesCell {

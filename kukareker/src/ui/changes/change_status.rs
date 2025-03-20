@@ -20,18 +20,18 @@ impl ToLabel for ChangeStatus {
 
 impl From<git2::Status> for ChangeStatus {
     fn from(value: git2::Status) -> Self {
-        if value.is_wt_new() {
+        if value.is_wt_new() || value.is_index_new() {
             return Self::New;
         }
 
-        if value.is_wt_modified() {
+        if value.is_wt_modified() || value.is_index_modified() {
             return Self::Changed;
         }
 
-        if value.is_wt_deleted() {
+        if value.is_wt_deleted() || value.is_index_deleted() {
             return Self::Deleted;
         }
 
-        todo!()
+        todo!("{value:?}")
     }
 }

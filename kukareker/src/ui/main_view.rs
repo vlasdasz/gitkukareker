@@ -21,7 +21,7 @@ use crate::{
 };
 
 #[view]
-pub struct Main {
+pub struct MainView {
     #[init]
     repo_name: DropDown<PathBuf>,
     open:      Button,
@@ -31,7 +31,7 @@ pub struct Main {
     history: History,
 }
 
-impl Setup for Main {
+impl Setup for MainView {
     fn setup(mut self: Weak<Self>) {
         Window::set_title("GitKukareker");
 
@@ -53,15 +53,16 @@ impl Setup for Main {
 
         self.changes.place().trb(0).w(500);
 
-        self.history.place().t(200).lrb(0);
+        self.history.place().t(200).b(0).lr(400);
 
         self.update();
     }
 }
 
-impl Main {
+impl MainView {
     fn update(mut self: Weak<Self>) {
         self.repo_name.set_values(State::repos().collect());
+        self.repo_selected(self.repo_name.value()).unwrap();
     }
 
     fn on_open(self: Weak<Self>) {

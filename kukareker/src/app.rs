@@ -4,7 +4,7 @@ use test_engine::{
     App,
 };
 
-use crate::ui::main::Main;
+use crate::ui::main_view::MainView;
 
 pub struct KukarekerApp;
 
@@ -17,6 +17,6 @@ impl App for KukarekerApp {
     fn setup(&self) {}
 
     fn make_root_view(&self) -> Own<dyn View> {
-        Main::new()
+        MainView::new()
     }
 }

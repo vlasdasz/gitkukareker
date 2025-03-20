@@ -1,27 +1,26 @@
 use std::path::PathBuf;
 
-use git2::{Repository, StatusOptions};
+use git::Repo;
 use rfd::FileDialog;
+use rtools::Unwrap;
 use test_engine::{
+    Window,
     refs::Weak,
     ui::{
-        link_button, view,
         Anchor::{Top, X},
-        Button, DropDown, HasText, Setup, ViewData,
+        Button, DropDown, HasText, Setup, ViewData, link_button, view,
     },
-    Window,
 };
 
 use crate::{
     model::State,
-    ui::{
-        changes::Changes,
-        history::{CommitHistory, History},
-    },
+    ui::{changes::Changes, history::History},
 };
 
 #[view]
 pub struct MainView {
+    repo: Unwrap<Repo>,
+
     #[init]
     repo_name: DropDown<PathBuf>,
     open:      Button,
@@ -75,27 +74,12 @@ impl MainView {
     }
 
     fn repo_selected(mut self: Weak<Self>, path: &PathBuf) -> anyhow::Result<()> {
-        let Ok(repo) = Repository::discover(path) else {
-            panic!("no repo")
-        };
+        self.repo = Repo::open(path)?.into();
 
-        let mut status_opts = StatusOptions::new();
-        status_opts.include_untracked(true);
+        let changes = self.repo.changes()?;
+        self.changes.set_changes(changes);
 
-        let statuses = repo.statuses(Some(&mut status_opts))?;
-
-        self.changes.set_changes(statuses.into_iter().map(Into::into).collect());
-
-        let head = repo.head()?;
-        let head_commit = head.peel_to_commit()?;
-
-        let mut revwalk = repo.revwalk()?;
-        revwalk.push(head_commit.id())?;
-
-        let history: Vec<CommitHistory> = revwalk
-            .map(|commit_id| repo.find_commit(commit_id.unwrap()).unwrap().into())
-            .collect();
-
+        let history = self.repo.history()?;
         self.history.set_history(history);
 
         Ok(())

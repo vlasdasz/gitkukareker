@@ -1,6 +1,6 @@
 use git2::StatusEntry;
 
-use crate::ui::changes::ChangeStatus;
+use crate::ChangeStatus;
 
 #[derive(Debug)]
 pub struct Change {

@@ -13,7 +13,11 @@ rfd = "0.15"
 git2 = "0.20"
 anyhow = "1.0"
 
+rtools = "0.9"
+
 kukareker = { path = "kukareker" }
+
+git = { path = "git" }
 
 #test-engine = { git = "https://github.com/vlasdasz/test-engine.git", rev = "db78609c8645e43a477952a45414f1430c0f0232" }
 test-engine = { path = "../test-engine/test-engine" }

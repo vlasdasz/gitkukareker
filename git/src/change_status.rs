@@ -1,5 +1,3 @@
-use test_engine::ui::ToLabel;
-
 #[derive(Debug, Copy, Clone)]
 pub enum ChangeStatus {
     New,
@@ -7,8 +5,8 @@ pub enum ChangeStatus {
     Deleted,
 }
 
-impl ToLabel for ChangeStatus {
-    fn to_label(&self) -> String {
+impl ToString for ChangeStatus {
+    fn to_string(&self) -> String {
         match self {
             ChangeStatus::New => "+",
             ChangeStatus::Changed => "E",

@@ -1,9 +1,8 @@
+use git::CommitHistory;
 use test_engine::{
     refs::Weak,
-    ui::{view, HasText, Label, Setup, ViewData},
+    ui::{HasText, Label, Setup, ViewData, view},
 };
-
-use crate::ui::history::commit_history::CommitHistory;
 
 #[view]
 pub struct HistoryCell {

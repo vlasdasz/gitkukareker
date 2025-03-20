@@ -1,11 +1,12 @@
 use std::{any::Any, ops::Deref};
 
+use git::CommitHistory;
 use test_engine::{
     refs::{Own, Weak},
-    ui::{view, CollectionData, CollectionView, Setup, View, ViewData},
+    ui::{CollectionData, CollectionView, Setup, View, ViewData, view},
 };
 
-use crate::ui::history::{commit_history::CommitHistory, history_cell::HistoryCell};
+use crate::ui::history::history_cell::HistoryCell;
 
 #[view]
 pub struct History {

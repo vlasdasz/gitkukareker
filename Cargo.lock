@@ -157,6 +157,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "android-ndk-sys"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3ec6ef28479835db378e2202b3911608e2269405e924fabb02ac3c8fb50284fe"
+
+[[package]]
 name = "android-properties"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1668,6 +1674,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "07e28edb80900c19c28f1072f2e8aeca7fa06b23cd4169cefe1af5aa3260783f"
 
 [[package]]
+name = "git"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "git2",
+]
+
+[[package]]
 name = "git2"
 version = "0.20.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2245,8 +2259,9 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "cfg_aliases",
- "git2",
+ "git",
  "rfd",
+ "rtools",
  "test-engine",
 ]
 
@@ -2597,6 +2612,12 @@ dependencies = [
  "wasi 0.11.0+wasi-snapshot-preview1",
  "windows-sys 0.52.0",
 ]
+
+[[package]]
+name = "mutants"
+version = "0.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bc0287524726960e07b119cebd01678f852f147742ae0d925e6a520dca956126"
 
 [[package]]
 name = "naga"
@@ -3920,6 +3941,29 @@ dependencies = [
  "hound",
  "lewton",
  "symphonia",
+]
+
+[[package]]
+name = "rtools"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "39d95928aef669ab367cfd0c3d8394e0202105397d20dfdd901506d617ec6801"
+dependencies = [
+ "android-ndk-sys",
+ "android_logger",
+ "anyhow",
+ "cfg-if",
+ "cfg_aliases",
+ "chrono",
+ "dirs",
+ "lazy_static",
+ "log",
+ "mutants",
+ "regex",
+ "serde",
+ "serde_json",
+ "tokio",
+ "web-time",
 ]
 
 [[package]]

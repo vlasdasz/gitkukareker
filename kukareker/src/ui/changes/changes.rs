@@ -1,11 +1,12 @@
 use std::{any::Any, ops::Deref};
 
+use git::Change;
 use test_engine::{
     refs::{Own, Weak},
-    ui::{view, CollectionData, CollectionView, Setup, View, ViewData},
+    ui::{CollectionData, CollectionView, Setup, View, ViewData, view},
 };
 
-use crate::ui::changes::{changes_cell::ChangesCell, Change};
+use crate::ui::changes::changes_cell::ChangesCell;
 
 #[view]
 pub struct Changes {

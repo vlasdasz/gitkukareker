@@ -12,13 +12,15 @@ use test_engine::{
     Window,
 };
 
-use crate::model::State;
+use crate::{model::State, ui::changes::Changes};
 
 #[view]
 pub struct Main {
     #[init]
     repo_name: DropDown<PathBuf>,
     open:      Button,
+
+    changes: Changes,
 }
 
 impl Setup for Main {
@@ -41,6 +43,8 @@ impl Setup for Main {
 
         link_button!(self, open, on_open);
 
+        self.changes.place().trb(0).w(500);
+
         self.update();
     }
 }
@@ -59,8 +63,7 @@ impl Main {
         self.update();
     }
 
-    #[allow(clippy::unused_self)]
-    fn repo_selected(self: Weak<Self>, path: &PathBuf) {
+    fn repo_selected(mut self: Weak<Self>, path: &PathBuf) {
         let Ok(repo) = Repository::discover(path) else {
             panic!("no repo")
         };
@@ -74,5 +77,7 @@ impl Main {
             dbg!(&status.status());
             dbg!(&status.path());
         }
+
+        self.changes.set_changes(statuses.into_iter().map(Into::into).collect());
     }
 }

@@ -31,6 +31,8 @@ pub struct MainView {
 
     fetch: Button,
 
+    discard: Button,
+
     changes: Changes,
 
     history: History,
@@ -62,6 +64,12 @@ impl Setup for MainView {
         self.fetch.place().below(self.branch, 20);
         self.fetch.on_tap(move || {
             Task::spin(move || self.repo.fetch());
+        });
+
+        self.discard.set_text("Discard All");
+        self.discard.place().below(self.fetch, 20);
+        self.discard.on_tap(move || {
+            Task::spin(move || self.repo.discard_all());
         });
 
         self.changes.place().trb(0).w(500);

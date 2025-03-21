@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use anyhow::Result;
-use git2::{Cred, FetchOptions, RemoteCallbacks, StatusOptions};
+use git2::{Cred, FetchOptions, RemoteCallbacks, ResetType, StatusOptions};
 
 use crate::{Change, commit_history::CommitHistory};
 
@@ -74,6 +74,25 @@ impl Repo {
             None,
         )?;
         println!("Fetch completed!");
+
+        Ok(())
+    }
+
+    pub fn discard_all(&self) -> Result<()> {
+        let head_commit = self.repo.head()?.peel_to_commit()?;
+        self.repo.reset(head_commit.as_object(), ResetType::Hard, None)?;
+
+        // Discard untracked
+        let mut status_opts = StatusOptions::new();
+        status_opts.include_untracked(true);
+        let statuses = self.repo.statuses(Some(&mut status_opts))?;
+
+        for entry in statuses.iter() {
+            if entry.status().is_index_new() || entry.status().is_wt_new() {
+                let full_path = self.repo.workdir().unwrap().join(entry.path().unwrap());
+                std::fs::remove_file(&full_path)?;
+            }
+        }
 
         Ok(())
     }

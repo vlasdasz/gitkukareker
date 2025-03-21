@@ -19,5 +19,5 @@ kukareker = { path = "kukareker" }
 
 git = { path = "git" }
 
-#test-engine = { git = "https://github.com/vlasdasz/test-engine.git", rev = "db78609c8645e43a477952a45414f1430c0f0232" }
-test-engine = { path = "../test-engine/test-engine" }
+test-engine = { git = "https://github.com/vlasdasz/test-engine.git", rev = "86a29ff0a6bfbe9e8492e146cd5d2b4f0e9802d4" }
+#test-engine = { path = "../test-engine/test-engine" }

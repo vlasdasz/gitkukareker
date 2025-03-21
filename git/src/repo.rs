@@ -43,7 +43,16 @@ impl Repo {
         Ok(())
     }
 
+    pub fn has_staged_changes(&self) -> Result<bool> {
+        Ok(self.changes()?.iter().any(|change| change.staged))
+    }
+
     pub fn commit(&self, message: impl ToString) -> Result<()> {
+        if !self.has_staged_changes()? {
+            println!("Nothing to commit");
+            return Ok(());
+        }
+
         let mut index = self.repo.index()?;
 
         let tree_id = index.write_tree()?;

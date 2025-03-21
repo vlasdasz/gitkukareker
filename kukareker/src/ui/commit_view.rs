@@ -28,6 +28,7 @@ impl Setup for CommitView {
         self.push_button.on_tap(move || {
             let text = self.commit_message.text().to_string();
             self.pressed.trigger(text);
+            self.commit_message.clear();
         });
     }
 }

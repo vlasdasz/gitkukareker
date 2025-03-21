@@ -1,14 +1,16 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
-use git::Repo;
+use anyhow::Result;
+use git::{Change, CommitHistory, Repo};
 use rfd::FileDialog;
 use rtools::Unwrap;
 use test_engine::{
-    Window,
+    Task, Window,
     refs::Weak,
     ui::{
+        AlertErr,
         Anchor::{Top, X},
-        Button, DropDown, HasText, Label, Setup, ViewData, link_button, view,
+        Button, DropDown, HasText, Label, Setup, Spinner, ViewData, link_button, view,
     },
 };
 
@@ -40,7 +42,7 @@ impl Setup for MainView {
         self.repo_name
             .custom_format(|path| path.file_name().unwrap().to_string_lossy().to_string());
         self.repo_name.on_changed(move |path| {
-            self.repo_selected(&path).unwrap();
+            self.repo_selected(&path);
         });
 
         self.open.set_text("Open");
@@ -65,7 +67,7 @@ impl Setup for MainView {
 impl MainView {
     fn update(mut self: Weak<Self>) {
         self.repo_name.set_values(State::repos().collect());
-        self.repo_selected(self.repo_name.value()).unwrap();
+        self.repo_selected(self.repo_name.value());
     }
 
     fn on_open(self: Weak<Self>) {
@@ -77,18 +79,40 @@ impl MainView {
         self.update();
     }
 
-    fn repo_selected(mut self: Weak<Self>, path: &PathBuf) -> anyhow::Result<()> {
-        self.repo = Repo::open(path)?.into();
+    fn repo_selected(mut self: Weak<Self>, path: &Path) {
+        let spin = Spinner::lock();
 
-        let changes = self.repo.changes()?;
-        self.changes.set_changes(changes);
+        let path = path.to_owned();
 
-        let history = self.repo.history()?;
-        self.history.set_history(history);
+        Task::blocking(move || {
+            let repo = Repo::open(path)?;
 
-        let branch = self.repo.current_branch()?;
-        self.branch.set_text(branch);
+            Ok((
+                RepoData {
+                    changes: repo.changes()?,
+                    history: repo.history()?,
+                    branch:  repo.current_branch()?,
+                },
+                repo,
+            ))
+        })
+        .callback(move |data: Result<(RepoData, Repo)>| {
+            let Some((data, repo)) = data.alert_err() else {
+                return;
+            };
 
-        Ok(())
+            self.repo = repo.into();
+
+            self.changes.set_changes(data.changes);
+            self.history.set_history(data.history);
+            self.branch.set_text(data.branch);
+            drop(spin);
+        });
     }
+}
+
+struct RepoData {
+    changes: Vec<Change>,
+    history: Vec<CommitHistory>,
+    branch:  String,
 }

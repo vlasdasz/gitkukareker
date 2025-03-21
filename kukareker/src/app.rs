@@ -1,7 +1,7 @@
 use test_engine::{
+    App,
     refs::Own,
     ui::{Setup, View},
-    App,
 };
 
 use crate::ui::main_view::MainView;

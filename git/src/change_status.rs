@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 #[derive(Debug, Copy, Clone)]
 pub enum ChangeStatus {
     New,
@@ -5,14 +7,15 @@ pub enum ChangeStatus {
     Deleted,
 }
 
-impl ToString for ChangeStatus {
-    fn to_string(&self) -> String {
-        match self {
+impl Display for ChangeStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let str = match self {
             ChangeStatus::New => "+",
             ChangeStatus::Changed => "E",
             ChangeStatus::Deleted => "-",
         }
-        .to_string()
+        .to_string();
+        write!(f, "{str}")
     }
 }
 

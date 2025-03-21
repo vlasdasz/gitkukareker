@@ -14,7 +14,7 @@ pub struct ChangesCell {
 impl ChangesCell {
     pub fn set_change(&mut self, change: &Change) {
         self.status.set_text(change.status.to_string());
-        self.file.set_text(&change.file.to_string());
+        self.file.set_text(change.file.to_string());
     }
 }
 

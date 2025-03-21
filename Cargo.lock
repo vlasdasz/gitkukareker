@@ -2511,9 +2511,9 @@ dependencies = [
 
 [[package]]
 name = "manage"
-version = "0.8.0"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "666840a346b800825fdfaa7b4c86f4893687bae57e820d1027befd3c5ff77b05"
+checksum = "302bda6dc656f4d62ce31b07117717fb6694cb9bbd229cfc7413024477624f25"
 dependencies = [
  "refs",
 ]
@@ -3791,9 +3791,9 @@ dependencies = [
 
 [[package]]
 name = "refs"
-version = "0.13.0"
+version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2f1ada2ab934a021bdaa12b7a5710ea68c6d41b60dd8f25e0daf82722e2af3b8"
+checksum = "1464cec11ba0c2b05ad9f4b3f7eff220850c1be47340417ca59831fa7deba3b6"
 dependencies = [
  "derive_more",
  "log",

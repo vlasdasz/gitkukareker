@@ -16,7 +16,7 @@ use test_engine::{
 
 use crate::{
     model::State,
-    ui::{changes::Changes, history::History},
+    ui::{changes::Changes, commit_view::CommitView, history::History},
 };
 
 #[view]
@@ -33,9 +33,13 @@ pub struct MainView {
 
     discard: Button,
 
+    stage: Button,
+
     changes: Changes,
 
     history: History,
+
+    commit: CommitView,
 }
 
 impl Setup for MainView {
@@ -72,9 +76,20 @@ impl Setup for MainView {
             Task::spin(move || self.repo.discard_all());
         });
 
-        self.changes.place().trb(0).w(500);
+        self.stage.set_text("Stage All");
+        self.stage.place().tr(0).size(500, 100);
+        self.stage.on_tap(move || {
+            Task::spin(move || self.repo.stage_all());
+        });
+
+        self.changes.place().anchor(Top, self.stage, 20).br(0).w(500);
 
         self.history.place().t(200).b(0).lr(550);
+
+        self.commit.place().bl(0).size(600, 280);
+        self.commit.on_push_pressed(move |message| {
+            Task::spin(move || self.repo.commit(message));
+        });
 
         self.update();
     }

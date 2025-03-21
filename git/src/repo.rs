@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use anyhow::Result;
-use git2::{Cred, FetchOptions, RemoteCallbacks, ResetType, StatusOptions};
+use git2::{Cred, FetchOptions, IndexAddOption, RemoteCallbacks, ResetType, StatusOptions};
 
 use crate::{Change, commit_history::CommitHistory};
 
@@ -33,6 +33,39 @@ impl Repo {
         let statuses = self.repo.statuses(Some(&mut status_opts))?;
 
         Ok(statuses.into_iter().map(Into::into).collect())
+    }
+
+    pub fn stage_all(&self) -> Result<()> {
+        let mut index = self.repo.index()?;
+        index.add_all(["*"].iter(), IndexAddOption::DEFAULT, None)?;
+        index.write()?;
+
+        Ok(())
+    }
+
+    pub fn commit(&self, message: impl ToString) -> Result<()> {
+        let mut index = self.repo.index()?;
+
+        let tree_id = index.write_tree()?;
+        let tree = self.repo.find_tree(tree_id)?;
+
+        let head = self.repo.head();
+        let parent_commit = match head {
+            Ok(head_ref) if head_ref.is_branch() => Some(head_ref.peel_to_commit()?),
+            _ => None,
+        };
+
+        let sig = self.repo.signature()?;
+
+        let message = message.to_string();
+
+        if let Some(parent) = parent_commit {
+            self.repo.commit(Some("HEAD"), &sig, &sig, &message, &tree, &[&parent])?
+        } else {
+            self.repo.commit(Some("HEAD"), &sig, &sig, &message, &tree, &[])? // First commit (no parent)
+        };
+
+        Ok(())
     }
 
     pub fn history(&self) -> Result<Vec<CommitHistory>> {

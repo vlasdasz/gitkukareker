@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use anyhow::Result;
-use git2::{Cred, FetchOptions, IndexAddOption, RemoteCallbacks, ResetType, StatusOptions};
+use git2::{Cred, FetchOptions, IndexAddOption, PushOptions, RemoteCallbacks, ResetType, StatusOptions};
 
 use crate::{Change, commit_history::CommitHistory};
 
@@ -47,9 +47,39 @@ impl Repo {
         Ok(self.changes()?.iter().any(|change| change.staged))
     }
 
-    pub fn commit(&self, message: impl ToString) -> Result<()> {
+    pub fn push(&self) -> Result<()> {
+        let remote = self.remote()?;
+
+        let mut remote = self.repo.find_remote(&remote)?;
+
+        let mut callbacks = RemoteCallbacks::new();
+        callbacks.credentials(|url, username_from_url, allowed_types| {
+            println!("Connecting to: {url}");
+
+            if allowed_types.is_ssh_key() {
+                return Cred::ssh_key_from_agent(username_from_url.unwrap_or("git"));
+            }
+
+            Err(git2::Error::from_str("No valid credentials available"))
+        });
+
+        callbacks.certificate_check(|_, _| Ok(git2::CertificateCheckStatus::CertificateOk));
+
+        let mut push_options = PushOptions::new();
+        push_options.remote_callbacks(callbacks);
+
+        let branch = self.current_branch()?;
+
+        let refspec = format!("refs/heads/{branch}:refs/heads/{branch}");
+        remote.push(&[refspec], Some(&mut push_options))?;
+
+        Ok(())
+    }
+
+    pub fn commit_and_push(&self, message: impl ToString) -> Result<()> {
         if !self.has_staged_changes()? {
             println!("Nothing to commit");
+            self.push()?;
             return Ok(());
         }
 
@@ -74,7 +104,7 @@ impl Repo {
             self.repo.commit(Some("HEAD"), &sig, &sig, &message, &tree, &[])? // First commit (no parent)
         };
 
-        Ok(())
+        self.push()
     }
 
     pub fn history(&self) -> Result<Vec<CommitHistory>> {

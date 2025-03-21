@@ -88,7 +88,7 @@ impl Setup for MainView {
 
         self.commit.place().bl(0).size(600, 280);
         self.commit.on_push_pressed(move |message| {
-            Task::spin(move || self.repo.commit(message));
+            Task::spin(move || self.repo.commit_and_push(message));
         });
 
         self.update();

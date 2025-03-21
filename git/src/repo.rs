@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use anyhow::Result;
-use git2::StatusOptions;
+use git2::{Cred, FetchOptions, RemoteCallbacks, StatusOptions};
 
 use crate::{Change, commit_history::CommitHistory};
 
@@ -47,7 +47,40 @@ impl Repo {
             .collect())
     }
 
-    pub fn remote(&self) -> Result<String> {
+    pub fn fetch(&self) -> Result<()> {
+        let remote = self.remote()?;
+
+        let mut remote = self.repo.find_remote(&remote)?;
+
+        let mut callbacks = RemoteCallbacks::new();
+        callbacks.credentials(|url, username_from_url, allowed_types| {
+            println!("Connecting to: {url}");
+
+            if allowed_types.is_ssh_key() {
+                return Cred::ssh_key_from_agent(username_from_url.unwrap_or("git"));
+            }
+
+            Err(git2::Error::from_str("No valid credentials available"))
+        });
+
+        callbacks.certificate_check(|_, _| Ok(git2::CertificateCheckStatus::CertificateOk));
+
+        let mut fetch_options = FetchOptions::new();
+        fetch_options.remote_callbacks(callbacks);
+
+        remote.fetch(
+            &["refs/heads/*:refs/remotes/origin/*"],
+            Some(&mut fetch_options),
+            None,
+        )?;
+        println!("Fetch completed!");
+
+        Ok(())
+    }
+}
+
+impl Repo {
+    fn remote(&self) -> Result<String> {
         let binding = self.repo.remotes()?;
         let remotes: Vec<_> = binding.into_iter().collect();
 

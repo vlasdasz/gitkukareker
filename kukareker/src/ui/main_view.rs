@@ -5,7 +5,7 @@ use git::{Change, CommitHistory, Repo};
 use rfd::FileDialog;
 use rtools::Unwrap;
 use test_engine::{
-    Task, Window,
+    Task, TaskSpinner, Window,
     refs::Weak,
     ui::{
         AlertErr,
@@ -28,6 +28,8 @@ pub struct MainView {
     open:      Button,
 
     branch: Label,
+
+    fetch: Button,
 
     changes: Changes,
 
@@ -56,9 +58,15 @@ impl Setup for MainView {
 
         self.branch.place().below(self.open, 20);
 
+        self.fetch.set_text("Fetch");
+        self.fetch.place().below(self.branch, 20);
+        self.fetch.on_tap(move || {
+            Task::spin(move || self.repo.fetch());
+        });
+
         self.changes.place().trb(0).w(500);
 
-        self.history.place().t(200).b(0).lr(400);
+        self.history.place().t(200).b(0).lr(550);
 
         self.update();
     }

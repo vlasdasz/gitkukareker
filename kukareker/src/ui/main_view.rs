@@ -8,7 +8,7 @@ use test_engine::{
     refs::Weak,
     ui::{
         Anchor::{Top, X},
-        Button, DropDown, HasText, Setup, ViewData, link_button, view,
+        Button, DropDown, HasText, Label, Setup, ViewData, link_button, view,
     },
 };
 
@@ -24,6 +24,8 @@ pub struct MainView {
     #[init]
     repo_name: DropDown<PathBuf>,
     open:      Button,
+
+    branch: Label,
 
     changes: Changes,
 
@@ -49,6 +51,8 @@ impl Setup for MainView {
             .size(200, 100);
 
         link_button!(self, open, on_open);
+
+        self.branch.place().below(self.open, 20);
 
         self.changes.place().trb(0).w(500);
 
@@ -81,6 +85,9 @@ impl MainView {
 
         let history = self.repo.history()?;
         self.history.set_history(history);
+
+        let branch = self.repo.current_branch()?;
+        self.branch.set_text(branch);
 
         Ok(())
     }

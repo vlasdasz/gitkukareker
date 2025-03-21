@@ -16,6 +16,16 @@ impl Repo {
         })
     }
 
+    pub fn current_branch(&self) -> Result<String> {
+        let head = self.repo.head()?;
+        Ok(if head.is_branch() {
+            head.shorthand().unwrap_or("INVALID STRING")
+        } else {
+            "HEAD"
+        }
+        .to_string())
+    }
+
     pub fn changes(&self) -> Result<Vec<Change>> {
         let mut status_opts = StatusOptions::new();
         status_opts.include_untracked(true);

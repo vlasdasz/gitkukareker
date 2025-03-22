@@ -137,7 +137,7 @@ impl Repo {
             if allowed_types.is_ssh_key() {
                 if allowed_types.is_ssh_key() {
                     dbg!("KRADE");
-                    return Ok(Credentials::get().unwrap());
+                    return Cred::ssh_key_from_agent(username_from_url.unwrap());
                 }
             }
 

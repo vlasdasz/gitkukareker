@@ -1,6 +1,7 @@
 mod change;
 mod change_status;
 mod commit_history;
+mod credentials;
 mod repo;
 
 pub use change::Change;

@@ -10,3 +10,5 @@ crate-type = ["rlib", "staticlib"]
 [dependencies]
 git2 = { workspace = true }
 anyhow = { workspace = true }
+ssh-key = { workspace = true }
+dirs = { workspace = true }

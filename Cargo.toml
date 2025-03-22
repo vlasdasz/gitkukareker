@@ -12,6 +12,8 @@ ignored = []
 rfd = "0.15"
 git2 = "0.20"
 anyhow = "1.0"
+ssh-key = "0.6"
+dirs = "6.0"
 
 rtools = "0.9"
 

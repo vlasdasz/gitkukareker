@@ -1,9 +1,12 @@
 use std::path::Path;
 
 use anyhow::Result;
-use git2::{Cred, FetchOptions, IndexAddOption, PushOptions, RemoteCallbacks, ResetType, StatusOptions};
+use git2::{
+    AutotagOption, Cred, FetchOptions, IndexAddOption, PushOptions, RemoteCallbacks, RemoteUpdateFlags,
+    ResetType, StatusOptions,
+};
 
-use crate::{Change, commit_history::CommitHistory};
+use crate::{Change, commit_history::CommitHistory, credentials::Credentials};
 
 pub struct Repo {
     repo: git2::Repository,
@@ -56,8 +59,11 @@ impl Repo {
         callbacks.credentials(|url, username_from_url, allowed_types| {
             println!("Connecting to: {url}");
 
+            dbg!(&username_from_url);
+            dbg!(&allowed_types);
+
             if allowed_types.is_ssh_key() {
-                return Cred::ssh_key_from_agent(username_from_url.unwrap_or("git"));
+                return Ok(Credentials::get().unwrap());
             }
 
             Err(git2::Error::from_str("No valid credentials available"))
@@ -129,13 +135,56 @@ impl Repo {
             println!("Connecting to: {url}");
 
             if allowed_types.is_ssh_key() {
-                return Cred::ssh_key_from_agent(username_from_url.unwrap_or("git"));
+                if allowed_types.is_ssh_key() {
+                    dbg!("KRADE");
+                    return Ok(Credentials::get().unwrap());
+                }
             }
 
             Err(git2::Error::from_str("No valid credentials available"))
         });
 
-        callbacks.certificate_check(|_, _| Ok(git2::CertificateCheckStatus::CertificateOk));
+        callbacks.certificate_check(|_cert, shmert| {
+            // dbg!(&cert.as_hostkey().);
+
+            dbg!("Check?");
+            dbg!(&shmert);
+
+            Ok(git2::CertificateCheckStatus::CertificateOk)
+        });
+
+        callbacks.push_update_reference(|a, b| {
+            dbg!("push_update_reference");
+            dbg!(&a);
+            dbg!(&b);
+
+            Ok(())
+        });
+
+        callbacks.push_negotiation(|a| {
+            dbg!("FOROGORN");
+
+            for a in a {
+                dbg!(&a.src_refname());
+            }
+
+            Ok(())
+        });
+
+        callbacks.sideband_progress(|a| {
+            dbg!("sideband_progress");
+            dbg!(&a);
+            true
+        });
+
+        callbacks.update_tips(|refname, a, b| {
+            if a.is_zero() {
+                println!("[new]     {:20} {}", b, refname);
+            } else {
+                println!("[updated] {:10}..{:10} {}", a, b, refname);
+            }
+            true
+        });
 
         let mut fetch_options = FetchOptions::new();
         fetch_options.remote_callbacks(callbacks);
@@ -145,6 +194,21 @@ impl Repo {
             Some(&mut fetch_options),
             None,
         )?;
+
+        // Disconnect the underlying connection to prevent from idling.
+        remote.disconnect()?;
+
+        // Update the references in the remote's namespace to point to the right
+        // commits. This may be needed even if there was no packfile to download,
+        // which can happen e.g. when the branches have been changed but all the
+        // needed objects are available locally.
+        remote.update_tips(
+            None,
+            RemoteUpdateFlags::UPDATE_FETCHHEAD,
+            AutotagOption::Unspecified,
+            None,
+        )?;
+
         println!("Fetch completed!");
 
         Ok(())

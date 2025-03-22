@@ -1,7 +1,7 @@
 [package]
 name = "kukareker"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [[bin]]
 name = "kukareker"
@@ -11,7 +11,11 @@ name = "kukareker"
 crate-type = ["rlib", "staticlib"]
 
 [dependencies]
-serde = { workspace = true }
+rfd = { workspace = true }
+git = { workspace = true }
+anyhow = { workspace = true }
+
+rtools = { workspace = true }
 
 test-engine = { workspace = true }
 

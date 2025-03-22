@@ -7,6 +7,7 @@
 use crate::app::KukarekerApp;
 
 mod app;
+mod model;
 mod ui;
 
 test_engine::register_app!(KukarekerApp);

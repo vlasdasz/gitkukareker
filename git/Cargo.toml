@@ -1,0 +1,12 @@
+[package]
+name = "git"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "git"
+crate-type = ["rlib", "staticlib"]
+
+[dependencies]
+git2 = { workspace = true }
+anyhow = { workspace = true }
